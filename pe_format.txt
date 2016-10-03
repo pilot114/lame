@@ -1,0 +1,79 @@
+*** PE format ***
+http://www.phreedom.org/research/tinype/
+
+0) DOS(MZ) header == 176 bytes
+
+1) file header (COFF Header)
+5045 0000 - static signature
+014c 	  - machine (Intel i386)
+0001  	  - number of section
+4545BD6F  - timestamp
+00000000  - pointer to symbol table (deprecated) - offset for COFF symbol table
+00000000  - number of symbol table (deprecated)  - length the COFF symbol table
+00e0 	  - size optional header
+0103	  - characteristics
+
+2) optional header
+	a) standart COFF Fields
+010B	  - "magic" (32bit)
+08 00	  - major and minor linker version
+00000200  - size of code (sum all .text sections)
+00000000  - size of init data (.data)
+00000000  - size of uninit data (.bbs)
+// its default position in memory (RVA format)
+00001000  - adress of entry point
+00001000  - base of code
+00002000  - base of data
+	b) Windows specific fields (additional fields)
+00400000  - image base (default start memory point for program)
+00001000  - section alignment (each section multiple of this value)
+00000200  - file alignment (for calc position on hard drive)
+0004 0000 - major and minor operating version
+0000 0000 - major and minor image version
+0004 0000 - major and minor subsystem version
+00000000  - win32 version value
+00002000  - size of image (total alloc memory for program)
+00000200  - size of headers
+00000000  - checksum (does not checked)
+0002 - subsystem (user ui type)
+0400 - DLL chracteristics
+00100000  - size of stack reserve (default 1MB)
+00001000  - size of stack commit (real alloc, default 1KB)
+00100000  - size of heap reserve
+00001000  - size of heap commit
+00000000  - loader flags (always zerofilled)
+00000010  - number of Rva in Data directories(always 16)
+	c) Data directories - empty in this case
+	(for example, contains links for using functions from other modules)
+
+3) Section table (for any section, sorted by RVA)
+0000 0074 7865 742e - section name
+(.text is source, .bss/.data/rdata is data, .rsrc is resource,
+.edata/.idata is export/import data, .debug for debug, .reloc last and dont alloc to memory)
+00000004  - virtual size (size source code for .text section)
+00001000  - virtual adress
+00000200  - size of raw data (rounded up to the file alignment size)
+00000000  - pointer to relocations
+00000000  - pointer to line numbers
+00000000  - number of relocations
+00000000  - number of line numbers
+60000020  - characteristics
+
+next is all sections (source code)
+
+(its file alignment, maybe remove with help linker options)
+0000 0000 0000 0000 0000 0000 0000 0000
+0000 0000 0000 0000 0000 0000 0000 0000
+0000 0000 0000 0000 0000 0000 0000 0000
+
+2a6a c358 - its "return 0";
+
+rest is padding
+
+comments:
+* Data directories (and other fields) contains related virtual adresses (RVA)
+For example, let's say the loader maps a PE file into memory starting at address 0x10000
+in the virtual address space. If a certain table in the image starts at address 0x10464, then the table's RVA is 0x464
+(Virtual address 0x10464)-(base address 0x10000) = RVA 0x00464
+* image == all sections + headers
+t.e. 2) and 3) is IMAGE_HEADER
