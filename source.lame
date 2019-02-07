@@ -1,1 +1,26 @@
-result(77)
+/*
+test
+*/
+
+a = 7
+b = true & false
+c =     true | false
+d = !c
+
+e = "hello"
+f = (2-1+3)*5/(5%3) // result: 10
+if (f<10) {
+	b = true
+}
+if (f>10) {
+	c = false
+} else {
+	d = true
+}
+g = (b == c & d)
+
+if (g) {
+	result(42)
+} else {
+	result(24)
+}

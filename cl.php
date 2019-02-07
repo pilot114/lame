@@ -1,7 +1,7 @@
 <?php
 
-require 'Parser.php';
-require 'Compiler.php';
+require 'my/Parser.php';
+require 'my/Compiler.php';
 
 list($cl, $iFile, $oFile) = $argv;
 $iFile = $iFile ?: "source.lame";
